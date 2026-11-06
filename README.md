@@ -1,5 +1,5 @@
 # Snapdragon Profiler
-
+hi
 A profiler for the Qualcomm **HDK8850 (SM8850P, "Snapdragon 8 Elite Gen 5")**. It
 dispatches benchmark kernels to the board's four compute engines -- **CPU, GPU,
 DSP, NPU** -- and returns comparable, provenance-carrying measurements for each.
