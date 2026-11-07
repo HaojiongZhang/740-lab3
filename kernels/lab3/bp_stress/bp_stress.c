@@ -55,31 +55,39 @@ int main(int argc, char **argv) {
          * YOUR CODE GOES HERE. The placeholder below is one predictable loop
          * branch per step: the baseline you are trying to beat.
          * ---------------------------------------------------------------- */
+        #define TEST_BIT(bit)                       \
+            "tbz %1, #" #bit ", 1f\n\t"             \
+            "add %0, %0, %1\n\t"                    \
+            "1:\n\t"
+
         for (long i = 0; i < size; i++) {
             rng ^= rng << 13;
             rng ^= rng >> 7;
             rng ^= rng << 17;
 
             __asm__ volatile(
-                "tbz %1, #63, 1f\n\t"
-                "add %0, %0, %1\n\t"
-                "1:\n\t"
-
-                "tbz %1, #62, 2f\n\t"
-                "eor %0, %0, %1\n\t"
-                "2:\n\t"
-
-                "tbz %1, #61, 3f\n\t"
-                "sub %0, %0, %1\n\t"
-                "3:\n\t"
-
-                "tbz %1, #60, 4f\n\t"
-                "add %0, %0, %1\n\t"
-                "4:"
+                TEST_BIT(63)
+                TEST_BIT(62)
+                TEST_BIT(61)
+                TEST_BIT(60)
+                TEST_BIT(59)
+                TEST_BIT(58)
+                TEST_BIT(57)
+                TEST_BIT(56)
+                TEST_BIT(55)
+                TEST_BIT(54)
+                TEST_BIT(53)
+                TEST_BIT(52)
+                TEST_BIT(51)
+                TEST_BIT(50)
+                TEST_BIT(49)
+                TEST_BIT(48)
                 : "+&r"(acc)
                 : "r"(rng)
             );
         }
+
+        #undef TEST_BIT
 
     }
     double us = now_us() - t0;
