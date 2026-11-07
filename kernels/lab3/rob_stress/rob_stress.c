@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
         printf("status: FAILED\nerror: need --mb >= 1 and --iterations >= 1\n");
         return 1;
     }
-    (void)seed;   /* use it if your program needs random numbers */
+    uint64_t rng = seed ? (uint64_t)seed : UINT64_C(1);   /* use it if your program needs random numbers */
 
     size_t n = (size_t)mb << 20 >> 3;        /* 8-byte elements */
     uint64_t *buf = malloc(n * sizeof *buf);
@@ -59,8 +59,18 @@ int main(int argc, char **argv) {
          * YOUR CODE GOES HERE. The placeholder below is a plain sum: loads
          * that do not depend on each other, from a buffer that fits in cache.
          * ---------------------------------------------------------------- */
-        for (size_t i = 0; i < n; i++)
-            acc += buf[i];
+        buf[0] = 0;
+        for (size_t i = 1; i < n; i++) {
+            rng ^= rng << 13;
+            rng ^= rng >> 7;
+            rng ^= rng << 17;
+
+            size_t j = rng % i;
+
+            /* Insert i after j in the existing cycle. */
+            buf[i] = buf[j];
+            buf[j] = i;
+        }
     }
     double us = now_us() - t0;
 
