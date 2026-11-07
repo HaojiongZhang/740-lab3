@@ -63,11 +63,24 @@ int main(int argc, char **argv) {
             __asm__ volatile(
                 "tbz %1, #63, 1f\n\t"
                 "add %0, %0, %1\n\t"
-                "1:"
-                : "+r"(acc)
+                "1:\n\t"
+
+                "tbz %1, #62, 2f\n\t"
+                "eor %0, %0, %1\n\t"
+                "2:\n\t"
+
+                "tbz %1, #61, 3f\n\t"
+                "sub %0, %0, %1\n\t"
+                "3:\n\t"
+
+                "tbz %1, #60, 4f\n\t"
+                "add %0, %0, %1\n\t"
+                "4:"
+                : "+&r"(acc)
                 : "r"(rng)
             );
         }
+
     }
     double us = now_us() - t0;
 
