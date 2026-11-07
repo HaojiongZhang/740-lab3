@@ -57,7 +57,9 @@ int main(int argc, char **argv) {
          * ---------------------------------------------------------------- */
         #define TEST_BIT(bit)                       \
             "tbz %1, #" #bit ", 1f\n\t"             \
+            ".rept 8\n\t"                           \
             "add %0, %0, %1\n\t"                    \
+            ".endr\n\t"                             \
             "1:\n\t"
 
         for (long i = 0; i < size; i++) {
