@@ -55,17 +55,18 @@ int main(int argc, char **argv) {
          * YOUR CODE GOES HERE. The placeholder below is one predictable loop
          * branch per step: the baseline you are trying to beat.
          * ---------------------------------------------------------------- */
-        for (long i = 0; i < size; i++){
+        for (long i = 0; i < size; i++) {
             rng ^= rng << 13;
             rng ^= rng >> 7;
             rng ^= rng << 17;
 
-            // Use its top bit to choose which path executes.
-            if (rng >> 63) {
-                __asm__ volatile("add %0, %0, %1" : "+r"(acc) : "r"(rng));
-            } else {
-                __asm__ volatile("eor %0, %0, %1" : "+r"(acc) : "r"(rng));
-            }
+            __asm__ volatile(
+                "tbz %1, #63, 1f\n\t"
+                "add %0, %0, %1\n\t"
+                "1:"
+                : "+r"(acc)
+                : "r"(rng)
+            );
         }
     }
     double us = now_us() - t0;
