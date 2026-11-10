@@ -53,7 +53,7 @@
 // MY_THREADS must not exceed the size of the stripes[] arrays below, which are
 // sized from it, so change it here and everything else follows.
 // ===========================================================================
-#define MY_THREADS 8
+#define MY_THREADS 2
 
 typedef struct {
     const float *in;
