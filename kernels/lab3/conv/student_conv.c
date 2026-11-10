@@ -53,7 +53,7 @@
 // MY_THREADS must not exceed the size of the stripes[] arrays below, which are
 // sized from it, so change it here and everything else follows.
 // ===========================================================================
-#define MY_THREADS 1
+#define MY_THREADS 8
 
 typedef struct {
     const float *in;
@@ -142,8 +142,8 @@ static void conv_hvx_stripe(const my_stripe_t *s) {
 static void my_range(int id, int nthreads, int H, int *oh_begin, int *oh_end) {
     // ---- TODO(Task 10.1): give worker `id` its own range of output rows ----
     (void)id; (void)nthreads;
-    *oh_begin = 0;
-    *oh_end   = H;
+    *oh_begin = H * id / nthreads;
+    *oh_end   = H * (id + 1) / nthreads;
     // ------------------------------------------------------------------------
 }
 
