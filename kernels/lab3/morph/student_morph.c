@@ -57,12 +57,25 @@
 // ===========================================================================
 static void morph_scalar(const uint8_t *in, uint8_t *out,
                          int W, int H, int K, int op) {
-    // ---- TODO(Task 10.10) ---------------------------------------------------
-    // Remove this line once you write the real thing. It copies the input
-    // through unchanged, so the damage survives and residual stays high.
-    (void)K; (void)op;
-    memcpy(out, in, (size_t)W * H);
-    // -------------------------------------------------------------------------
+    const int pad = K / 2;
+    // Clip the neighbourhood at image edges; fill every output pixel.
+    for (int y = 0; y < H; ++y) {
+        for (int x = 0; x < W; ++x) {
+            uint8_t acc = op == 0 ? 255 : 0;
+            for (int ky = -pad; ky <= pad; ++ky) {
+                const int yy = y + ky;
+                if (yy < 0 || yy >= H) continue;
+                for (int kx = -pad; kx <= pad; ++kx) {
+                    const int xx = x + kx;
+                    if (xx < 0 || xx >= W) continue;
+                    const uint8_t v = in[(size_t)yy * W + xx];
+                    if (op == 0) { if (v < acc) acc = v; }
+                    else         { if (v > acc) acc = v; }
+                }
+            }
+            out[(size_t)y * W + x] = acc;
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------

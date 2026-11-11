@@ -32,6 +32,8 @@
 #include "HAP_farf.h"
 #include "HAP_perf.h"
 #include "qurt_hvx.h"
+#include "qurt.h"
+#include "dma_utils.h"
 #include <hexagon_types.h>
 #include <hvx_hexagon_protos.h>
 #include <stdint.h>
@@ -39,6 +41,34 @@
 #include <string.h>
 
 #define STAGE_BLOCK_BYTES (2 * 1024 * 1024)   /* 2 MB per block */
+
+// Experiment switches: final submission uses coherent DMA with overlap.
+#define STAGE_COPY_MODE 2   /* 1: HVX, 2: DMA */
+#define STAGE_DMA_CLEAN 1
+#define STAGE_OVERLAP 1
+
+// 2 MiB = 64 rows of 32768 bytes. Each DMA row/stride fits 16 bits.
+// The descriptor stays alive until dma_wait_for_idle has completed.
+static int start_dma(void *desc, void *dst, const void *src, int bytes) {
+#if STAGE_DMA_CLEAN
+    if (qurt_mem_cache_clean((qurt_addr_t)src, (qurt_size_t)bytes,
+                             QURT_MEM_CACHE_FLUSH, QURT_MEM_DCACHE) != 0)
+        return -1;
+#endif
+    dma_desc_2d_params_t p;
+    memset(&p, 0, sizeof(p));
+    p.src_address = (uintptr_t)src;
+    p.dst_address = (uintptr_t)dst;
+    p.width = 32768;
+    p.height = bytes / 32768;
+    p.src_stride = p.dst_stride = 32768;
+    p.order = 1;
+    p.src_bypass = 1;
+    p.dst_bypass = 0;
+    if (bytes % 32768 || dma_desc_init(desc, &p, DMA_DESC_TYPE_2D) != DMA_SUCCESS)
+        return -1;
+    return dma_desc_submit(&desc, 1) == DMA_SUCCESS ? 0 : -1;
+}
 
 // The kernel applied to a block, P times. Deliberately cheap per element, so
 // that at low P the cost is dominated by getting the bytes here at all.
@@ -79,20 +109,22 @@ static uint32_t stage_kernel(const float *buf, int n, int P) {
 }
 
 // ===========================================================================
-// TASK 11.7 - my_copy(): move `bytes` from DDR into VTCM.
+// TASK 11.6 - my_copy(): move `bytes` from DDR into VTCM.
 //
-// It is memcpy right now, and Task 11.6 asks you to turn its measured rate into
-// a bandwidth figure and compare that against what you measured in Task 11.2
-// and 11.4. The gap is the whole point.
+// Retained for the separately measured HVX-copy experiment. The final staged
+// implementation uses coherent DMA and ping-pong buffers instead.
 //
 // Replace it with a copy through 128-byte HVX vectors. HVX_Vector is a 128-byte
 // type: a load and a store of one moves 128 bytes. Handle a tail that is not a
 // whole number of vectors.
 // ===========================================================================
 static void my_copy(void *dst, const void *src, int bytes) {
-    // ---- TODO(Task 11.7): replace this with an HVX vector copy -------------
-    memcpy(dst, src, (size_t)bytes);
-    // ------------------------------------------------------------------------
+    HVX_Vector *d = (HVX_Vector *)dst;
+    const HVX_Vector *s = (const HVX_Vector *)src;
+    int nv = bytes / 128;
+    for (int i = 0; i < nv; ++i) d[i] = s[i];
+    for (int i = nv * 128; i < bytes; ++i)
+        ((uint8_t *)dst)[i] = ((const uint8_t *)src)[i];
 }
 
 int dsp_conv_stage_calc(remote_handle64 h,
@@ -156,30 +188,65 @@ int dsp_conv_stage_calc(remote_handle64 h,
             t_comp += e - m;
         }
     } else {
-        /* ===================================================================
-         * TASK 11.10 - calc_staged(): your version.
-         *
-         * What is here now is the simplest correct thing: copy a block in,
-         * compute it, copy the next one in, compute that. Nothing overlaps, so
-         * the DSP is idle during every copy and the copy path is idle during
-         * every compute.
-         *
-         * You have room for TWO blocks in VTCM - buf[0] and buf[1] below. Start
-         * the next block's copy before computing the current one, and alternate.
-         * The timings you report should show copy_us falling relative to
-         * dsp_us as the copies hide behind compute.
-         * =================================================================== */
+        /* Tasks 11.6–11.8: selectable HVX/serial-DMA experiments and final
+         * double-buffered DMA. Two 2 MiB buffers fit the supplied 4 MiB grant.
+         * copy_us measures exposed copy work, not background DMA duration. */
         float *buf[2] = { vtcm, vtcm + block_n };
-        (void)buf;
-
+        void *desc = memalign(16, DMA_DESC_SIZE_2D);
+        if (!desc) {
+            qurt_hvx_unlock();
+            HAP_compute_res_release(ctx_id);
+            free(src);
+            return -3;
+        }
+        int failed = 0;
+#if STAGE_COPY_MODE == 2 && STAGE_OVERLAP
+        uint64_t c0 = HAP_perf_get_time_us();
+        failed = start_dma(desc, buf[0], src, block_bytes);
+        if (!failed) failed = dma_wait_for_idle() != DMA_SUCCESS;
+        t_copy += HAP_perf_get_time_us() - c0;
+        for (int b = 0; b < nblocks && !failed; ++b) {
+            const int cur = b & 1;
+            // Submit next transfer to the OTHER buffer before computing.
+            // Charge cache cleaning/submission and exposed wait to copy_us.
+            c0 = HAP_perf_get_time_us();
+            if (b + 1 < nblocks)
+                failed = start_dma(desc, buf[cur ^ 1], src + (long)(b + 1) * block_n, block_bytes);
+            t_copy += HAP_perf_get_time_us() - c0;
+            if (failed) break;
+            uint64_t a = HAP_perf_get_time_us();
+            sum += stage_kernel(buf[cur], block_n, P);
+            t_comp += HAP_perf_get_time_us() - a;
+            if (b + 1 < nblocks) {
+                a = HAP_perf_get_time_us();
+                failed = dma_wait_for_idle() != DMA_SUCCESS;
+                t_copy += HAP_perf_get_time_us() - a;
+            }
+        }
+#else
         for (int b = 0; b < nblocks; b++) {
             uint64_t c0 = HAP_perf_get_time_us();
+#if STAGE_COPY_MODE == 2
+            failed = start_dma(desc, buf[0], src + (long)b * block_n, block_bytes);
+            if (!failed) failed = dma_wait_for_idle() != DMA_SUCCESS;
+            if (failed) break;
+#else
             my_copy(buf[0], src + (long)b * block_n, block_bytes);
+#endif
             uint64_t c1 = HAP_perf_get_time_us();
             sum += stage_kernel(buf[0], block_n, P);
             uint64_t c2 = HAP_perf_get_time_us();
             t_copy += c1 - c0;
             t_comp += c2 - c1;
+        }
+#endif
+        if (failed) dma_wait_for_idle();
+        free(desc);
+        if (failed) {
+            qurt_hvx_unlock();
+            HAP_compute_res_release(ctx_id);
+            free(src);
+            return -4;  /* Never silently fall back and report memcpy as DMA. */
         }
     }
 
