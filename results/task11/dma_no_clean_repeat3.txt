@@ -1,0 +1,6 @@
+    1  stage.dsp                         2414.0 us  copy_us=707  compute_us=1685  copy_gbps=47.46  checksum=2086100
+    2  stage.dsp                         2431.0 us  copy_us=722  compute_us=1687  copy_gbps=46.47  checksum=2085663
+    3  stage.dsp                         2393.0 us  copy_us=687  compute_us=1686  copy_gbps=48.84  checksum=2086223
+
+  n=3  time (dsp_us): mean 2412.7  range 2393.0-2431.0  CoV 0.8%
+  WARNING: 3 distinct fingerprints across these runs -- they did not all compute the same answer

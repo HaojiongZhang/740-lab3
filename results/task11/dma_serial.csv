@@ -1,0 +1,16 @@
+label,impl,p,rep,total_us,copy_us,compute_us,checksum
+dma_serial,staged,1,1,3271.0,1566,1686,2097104
+dma_serial,staged,1,2,3252.0,1549,1685,2097104
+dma_serial,staged,1,3,3264.0,1556,1687,2097104
+dma_serial,staged,2,1,4916.0,1533,3364,4194192
+dma_serial,staged,2,2,4920.0,1536,3365,4194192
+dma_serial,staged,2,3,4950.0,1569,3363,4194192
+dma_serial,staged,4,1,8299.0,1566,6711,8388384
+dma_serial,staged,4,2,8293.0,1545,6729,8388384
+dma_serial,staged,4,3,8293.0,1543,6729,8388384
+dma_serial,staged,8,1,14457.0,1515,12922,16776736
+dma_serial,staged,8,2,14469.0,1504,12946,16776736
+dma_serial,staged,8,3,14504.0,1536,12947,16776736
+dma_serial,staged,16,1,26656.0,1505,25132,33553424
+dma_serial,staged,16,2,26645.0,1509,25118,33553424
+dma_serial,staged,16,3,26619.0,1476,25123,33553424
