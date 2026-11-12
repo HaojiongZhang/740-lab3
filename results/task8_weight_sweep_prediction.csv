@@ -1,0 +1,2 @@
+matched_clock_khz,matched_clock_gold_ipc,matched_clock_prime_ipc,part_b_gold_khz,part_b_prime_khz,predicted_prime_weight,best_measured_prime_weight,best_time_us_per_iter,best_speedup_vs_even
+3398400,2.8606331982667395,3.109431512405518,3628800,4396800,1.3170203918679628,2.4,18068.244444444445,1.3044863240725597

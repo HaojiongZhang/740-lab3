@@ -1,0 +1,5 @@
+workload,best_mask,best_mask_hex,best_time_us_per_iter,worst_mask,worst_mask_hex,worst_time_us_per_iter,worst_to_best_ratio,best_seven_core_mask,best_core_to_leave_idle,best_seven_time_us_per_iter
+saxpy,all_minus_c7,0x7f,2350.6966666666667,gold6,0x3f,4244.07,1.8054520007543862,all_minus_c7,7,2350.6966666666667
+reduction,all8,0xff,507.5583333333334,gold6,0x3f,1112.4333333333334,2.191734940154662,all_minus_c6,6,529.3222222222222
+convolution,all8,0xff,3673.0977777777775,gold6,0x3f,4785.866666666667,1.3029510664325723,all_minus_c6,6,4153.182222222222
+matmul,all8,0xff,20620.466666666667,prime2,0xc0,37036.2,1.7960893222591146,all_minus_c1,1,21444.966666666667
