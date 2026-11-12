@@ -40,13 +40,14 @@
 #include <unistd.h>    // getpagesize
 #include <mutex>
 #include <atomic>
+#include <limits.h>
 
 // -----------------------------------------------------------------------------
 // SWITCH: the lab should not block before you finish the TODOs.
 // Keep MEMSHARE_STUB_ONLY = 1 while you implement. When you are done,
 // set it to 0 to enable the rpcmem path.
 // -----------------------------------------------------------------------------
-#define MEMSHARE_STUB_ONLY 1
+#define MEMSHARE_STUB_ONLY 0
 
 // Round up to the OS page size (helps both fallback and rpcmem).
 static size_t page_align(size_t n) {
@@ -133,22 +134,44 @@ static std::atomic<bool> g_has_rpcmem{false};
 //  - if a load attempt fails or required symbols are missing, dlclose any opened handle
 //    and leave g_has_rpcmem=false so the code will fall back gracefully.
 static void try_init_rpcmem() {
-  // TODO(A): implement dynamic loading with dlopen/dlsym as described above.
-  // Functions to look up with dlsym: rpcmem_init, rpcmem_deinit, rpcmem_alloc,
-  //                                  rpcmem_free, rpcmem_to_fd.
+  const char* libraries[] = {"librpcmem.so", "libcdsprpc.so"};
+  for (const char* library : libraries) {
+    void* handle = dlopen(library, RTLD_NOW | RTLD_LOCAL);
+    if (!handle) continue;
+    auto init = reinterpret_cast<rpcmem_init_t>(dlsym(handle, "rpcmem_init"));
+    auto deinit = reinterpret_cast<rpcmem_deinit_t>(dlsym(handle, "rpcmem_deinit"));
+    auto alloc = reinterpret_cast<rpcmem_alloc_t>(dlsym(handle, "rpcmem_alloc"));
+    auto release = reinterpret_cast<rpcmem_free_t>(dlsym(handle, "rpcmem_free"));
+    auto to_fd = reinterpret_cast<rpcmem_to_fd_t>(dlsym(handle, "rpcmem_to_fd"));
+    if (!alloc || !release || !to_fd) { dlclose(handle); continue; }
+    if (init) init();
+    g_rpcmem_so = handle;
+    p_rpcmem_init = init;
+    p_rpcmem_deinit = init ? deinit : nullptr;
+    p_rpcmem_alloc = alloc;
+    p_rpcmem_free = release;
+    p_rpcmem_to_fd = to_fd;
+    g_has_rpcmem.store(true);
+    return;
+  }
 }
 
 extern "C" __attribute__((visibility("default")))
 void* AllocateSharedBuffer(size_t size) {
   std::call_once(g_once, try_init_rpcmem);
+  // rpcmem takes a signed int byte count; guard rounding and conversion.
+  const size_t page = static_cast<size_t>(getpagesize());
+  if (!size || size > static_cast<size_t>(INT_MAX) - (page - 1)) return nullptr;
   size = page_align(size);
 
   if (g_has_rpcmem.load()) {
-    // TODO(B): allocate via rpcmem to get a real shared buffer and FD.
-    // You should call p_rpcmem_alloc with:
-    //   - heap  = -1  (let rpcmem choose a default heap)
-    //   - flags = 1   (cached mapping works well for this lab)
-    // If allocation succeeds, return the pointer you got from p_rpcmem_alloc.
+    void* ptr = p_rpcmem_alloc(-1, 1, static_cast<int>(size));
+    if (ptr && p_rpcmem_to_fd(ptr) < 0) {
+      p_rpcmem_free(ptr);
+      return nullptr;
+    }
+    // Do not mix heap fallbacks with rpcmem frees after an allocation failure.
+    return ptr;
   }
 
   // Fallback remains available even in zero-copy build, in case runtime load fails.
@@ -166,9 +189,7 @@ extern "C" __attribute__((visibility("default")))
 void FreeSharedBuffer(void* ptr) {
   if (!ptr) return;
   if (g_has_rpcmem.load() && p_rpcmem_free) {
-    // TODO(C): free via rpcmem when the pointer came from rpcmem_alloc.
-    // If you only call FreeSharedBuffer on blocks you allocated here, it is fine
-    // to always call p_rpcmem_free when it is available.
+    p_rpcmem_free(ptr);
     return;
   }
   free(ptr);
@@ -176,10 +197,10 @@ void FreeSharedBuffer(void* ptr) {
 
 extern "C" __attribute__((visibility("default")))
 int GetSharedBufferFd(void* ptr) {
+  if (!ptr) return -1;
+  std::call_once(g_once, try_init_rpcmem);
   if (g_has_rpcmem.load() && p_rpcmem_to_fd) {
-    // TODO(D): return the shareable file descriptor for this allocation.
-    // You should call p_rpcmem_to_fd(ptr) and return its value.
-    // A non-negative FD indicates true zero-copy support.
+    return p_rpcmem_to_fd(ptr);
   }
   // Fallback: no FD available
   return -1;
@@ -191,7 +212,7 @@ int GetSharedBufferFd(void* ptr) {
 __attribute__((destructor))
 static void memshare_destructor() {
   if (g_has_rpcmem.load() && p_rpcmem_deinit) {
-    // TODO(E): call rpcmem_deinit().
+    p_rpcmem_deinit();
   }
   if (g_rpcmem_so) dlclose(g_rpcmem_so);
 }
