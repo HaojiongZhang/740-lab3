@@ -117,8 +117,10 @@ def main() -> None:
                                    params={"iterations": 30, "pin": True},
                                    metadata={"gold_khz": khz})
     prime_saxpy = Case("saxpy_prime_c7", "saxpy", 7, 1, "prime")
+    # SAXPY's threaded CPU binary does not implement --pin.  The taskset Gold
+    # mask plus six workers is still the required six-Gold-core configuration.
     gold_saxpy = lambda khz: Case(f"saxpy_gold6_{khz}", "saxpy", "gold", 6, "gold",
-                                  params={"pin": True}, metadata={"gold_khz": khz})
+                                  metadata={"gold_khz": khz})
 
     log = TrialLog(args.output, args.append)
     position = 1
