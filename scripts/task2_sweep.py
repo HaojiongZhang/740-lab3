@@ -54,21 +54,21 @@ def task23(log, repeats: int) -> None:
 
 
 def task24(log, workload: str, repeats: int) -> None:
-    # Counters are collected at every frequency so the outlier can be explained
-    # using IPC, backend stalls, and slot-backend stalls.
+    # The stalls preset supplies IPC plus backend- and slot-backend-stall
+    # counters required to explain the frequency-scaling outlier.
     for khz in FREQS:
         pin(khz, log)
         if workload == "matmul":
             cmd = ["matmul", "cpu", "--core", "prime", "--variant", "eigen",
-                   "-p", "size=1024", "--counters", "basic", "--repeat", str(repeats)]
+                   "-p", "size=1024", "--counters", "stalls", "--repeat", str(repeats)]
         elif workload == "conv":
             cmd = ["convolution", "cpu", "--core", "prime", "--variant", "neon",
                    "-p", "cin=32", "-p", "cout=32", "-p", "H=56", "-p", "W=56",
-                   "--counters", "basic", "--repeat", str(repeats)]
+                   "--counters", "stalls", "--repeat", str(repeats)]
         else:
             cmd = ["saxpy", "cpu", "--core", "prime", "--variant", "neon",
                    "-p", "size=16777216", "-p", "iterations=150",
-                   "--counters", "basic", "--repeat", str(repeats)]
+                   "--counters", "stalls", "--repeat", str(repeats)]
         run([sys.executable, str(PROF), *cmd], log)
 
 
@@ -76,7 +76,8 @@ def task25(log, workload: str, repeats: int) -> None:
     # Compare the maximum clock with its nearest half-clock OPP, then repeat
     # with a cache-fitting working set.  Matmul's N=256 is cache-fitting;
     # SAXPY uses 64 KiB, and convolution uses a small 8x8x8x8 shape.
-    high, half = FREQS[-1], FREQS[3]
+    # 2.2272 GHz is the nearest available OPP to half of the 4.3968 GHz peak.
+    high, half = FREQS[-1], FREQS[2]
     for khz in (high, half):
         pin(khz, log)
         if workload == "matmul":
@@ -89,7 +90,9 @@ def task25(log, workload: str, repeats: int) -> None:
             base = ["convolution", "cpu", "--core", "prime", "--variant", "neon"]
         else:
             params = ["-p", "size=16777216", "-p", "iterations=150"]
-            small = ["-p", "size=16384", "-p", "iterations=1000"]
+            # About 1.2 us/iteration at peak clock: 200k iterations keeps the
+            # dispatch above the 200 ms Task 2.1 reliability cutoff.
+            small = ["-p", "size=16384", "-p", "iterations=200000"]
             base = ["saxpy", "cpu", "--core", "prime", "--variant", "neon"]
         run([sys.executable, str(PROF), *base, *params, "--counters", "basic",
              "--repeat", str(repeats)], log)
