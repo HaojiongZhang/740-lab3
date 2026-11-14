@@ -1,0 +1,175 @@
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 768000
+saved deployment defaults -> .power_pin_state.json
+prime pinned: min=max=768000 kHz (768.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters stalls --repeat 3
+    1  saxpy.cpu.neon                    6402.5 us/iter x150    31.4 GB/s  fp=4.0985e+05  IPC=5.49  [clock 18% of max]
+    2  saxpy.cpu.neon                    6662.3 us/iter x150    30.2 GB/s  fp=4.0985e+05  IPC=5.32  [clock 17% of max]
+    3  saxpy.cpu.neon                    6503.1 us/iter x150    31.0 GB/s  fp=4.0985e+05  IPC=5.42  [clock 18% of max]
+
+  n=3  GB/s: mean 30.9  range 30.2-31.4  CoV 2.0%
+
+  counters, mean of 3 run(s):
+  cpu-cycles                    935,081,428
+  instructions                5,056,673,176
+  stalled-cycles-frontend        45,802,207
+  stalled-cycles-backend        173,064,195
+  raw-stall-slot              1,974,828,317
+  raw-stall-slot-backend      1,548,415,600
+  raw-stall-slot-frontend       433,954,031
+  raw-stall-backend-mem           1,922,737
+
+  ipc                                  5.409   range 5.316-5.487
+  cpi                                  0.185   range 0.182-0.188
+  frontend_stall_pct                   4.899   range 4.864-4.959
+  backend_stall_pct                   18.494   range 17.329-19.850
+  mem_stall_pct                        0.204   range 0.118-0.368
+  slot_backend_pct                    78.348   range 77.074-79.723
+  scaling_cur_freq_ghz                 0.768   range 0.768-0.768
+  scaling_cur_freq_samples            76.333   range 76.000-77.000
+  effective_ghz                        0.770   range 0.769-0.772
+  clock_of_max_pct                    17.524   range 17.499-17.557
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 1497600
+prime pinned: min=max=1497600 kHz (1497.6 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters stalls --repeat 3
+    1  saxpy.cpu.neon                    4628.8 us/iter x150    43.5 GB/s  fp=4.0985e+05  IPC=4.14  [clock 34% of max]
+    2  saxpy.cpu.neon                    4495.8 us/iter x150    44.8 GB/s  fp=4.0985e+05  IPC=4.23  [clock 34% of max]
+    3  saxpy.cpu.neon                    4474.0 us/iter x150    45.0 GB/s  fp=4.0985e+05  IPC=4.25  [clock 34% of max]
+
+  n=3  GB/s: mean 44.4  range 43.5-45.0  CoV 1.8%
+
+  counters, mean of 3 run(s):
+  cpu-cycles                  1,201,940,832
+  instructions                5,054,916,134
+  stalled-cycles-frontend        46,608,619
+  stalled-cycles-backend        439,607,626
+  raw-stall-slot              4,378,075,714
+  raw-stall-slot-backend      3,946,403,965
+  raw-stall-slot-frontend       438,764,404
+  raw-stall-backend-mem          45,486,218
+
+  ipc                                  4.206   range 4.136-4.248
+  cpi                                  0.238   range 0.235-0.242
+  frontend_stall_pct                   3.879   range 3.784-3.970
+  backend_stall_pct                   36.565   range 35.883-37.649
+  mem_stall_pct                        3.784   range 3.640-3.882
+  slot_backend_pct                    90.130   range 89.763-90.580
+  scaling_cur_freq_ghz                 1.498   range 1.498-1.498
+  scaling_cur_freq_samples            64.000   range 63.000-65.000
+  effective_ghz                        1.499   range 1.495-1.501
+  clock_of_max_pct                    34.088   range 33.999-34.136
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 2227200
+prime pinned: min=max=2227200 kHz (2227.2 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters stalls --repeat 3
+    1  saxpy.cpu.neon                    3753.4 us/iter x150    53.6 GB/s  fp=4.0985e+05  IPC=3.51  [clock 51% of max]
+    2  saxpy.cpu.neon                    3793.9 us/iter x150    53.1 GB/s  fp=4.0985e+05  IPC=3.48  [clock 51% of max]
+    3  saxpy.cpu.neon                    3563.2 us/iter x150    56.5 GB/s  fp=4.0985e+05  IPC=3.67  [clock 50% of max]
+
+  n=3  GB/s: mean 54.4  range 53.1-56.5  CoV 3.4%
+
+  counters, mean of 3 run(s):
+  cpu-cycles                  1,422,116,376
+  instructions                5,054,487,180
+  stalled-cycles-frontend        47,251,712
+  stalled-cycles-backend        659,330,502
+  raw-stall-slot              6,362,183,308
+  raw-stall-slot-backend      5,925,735,016
+  raw-stall-slot-frontend       444,969,372
+  raw-stall-backend-mem         103,122,535
+
+  ipc                                  3.556   range 3.482-3.672
+  cpi                                  0.281   range 0.272-0.287
+  frontend_stall_pct                   3.325   range 3.244-3.439
+  backend_stall_pct                   46.333   range 44.575-47.467
+  mem_stall_pct                        7.241   range 6.573-7.578
+  slot_backend_pct                    93.124   range 92.662-93.435
+  scaling_cur_freq_ghz                 2.227   range 2.227-2.227
+  scaling_cur_freq_samples            54.333   range 49.000-59.000
+  effective_ghz                        2.221   range 2.206-2.229
+  clock_of_max_pct                    50.516   range 50.176-50.695
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 2880000
+prime pinned: min=max=2880000 kHz (2880.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters stalls --repeat 3
+    1  saxpy.cpu.neon                    3407.1 us/iter x150    59.1 GB/s  fp=4.0985e+05  IPC=3.04  [clock 65% of max]
+    2  saxpy.cpu.neon                    3391.3 us/iter x150    59.4 GB/s  fp=4.0985e+05  IPC=3.05  [clock 65% of max]
+    3  saxpy.cpu.neon                    3414.8 us/iter x150    59.0 GB/s  fp=4.0985e+05  IPC=3.03  [clock 64% of max]
+
+  n=3  GB/s: mean 59.1  range 59.0-59.4  CoV 0.4%
+
+  counters, mean of 3 run(s):
+  cpu-cycles                  1,663,718,755
+  instructions                5,054,460,911
+  stalled-cycles-frontend        50,474,632
+  stalled-cycles-backend        897,754,517
+  raw-stall-slot              8,536,077,759
+  raw-stall-slot-backend      8,071,105,011
+  raw-stall-slot-frontend       477,833,089
+  raw-stall-backend-mem         162,999,483
+
+  ipc                                  3.038   range 3.028-3.051
+  cpi                                  0.329   range 0.328-0.330
+  frontend_stall_pct                   3.034   range 2.998-3.085
+  backend_stall_pct                   53.960   range 53.793-54.146
+  mem_stall_pct                        9.798   range 9.406-10.079
+  slot_backend_pct                    94.553   range 94.472-94.620
+  scaling_cur_freq_ghz                 2.880   range 2.880-2.880
+  scaling_cur_freq_samples            54.000   range 49.000-58.000
+  effective_ghz                        2.852   range 2.828-2.871
+  clock_of_max_pct                    64.864   range 64.317-65.302
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 3648000
+prime pinned: min=max=3648000 kHz (3648.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters stalls --repeat 3
+    1  saxpy.cpu.neon                    2868.0 us/iter x150    70.2 GB/s  fp=4.0985e+05  IPC=2.87
+    2  saxpy.cpu.neon                    2727.1 us/iter x150    73.8 GB/s  fp=4.0985e+05  IPC=3.00
+    3  saxpy.cpu.neon                    2658.0 us/iter x150    75.7 GB/s  fp=4.0985e+05  IPC=3.07
+
+  n=3  GB/s: mean 73.3  range 70.2-75.7  CoV 3.8%
+
+  counters, mean of 3 run(s):
+  cpu-cycles                  1,699,287,942
+  instructions                5,054,250,225
+  stalled-cycles-frontend        50,068,682
+  stalled-cycles-backend        933,802,048
+  raw-stall-slot              8,855,509,515
+  raw-stall-slot-backend      8,394,591,617
+  raw-stall-slot-frontend       474,480,622
+  raw-stall-backend-mem         162,378,659
+
+  ipc                                  2.977   range 2.866-3.069
+  cpi                                  0.336   range 0.326-0.349
+  frontend_stall_pct                   2.947   range 2.916-3.001
+  backend_stall_pct                   54.919   range 53.641-56.513
+  mem_stall_pct                        9.525   range 8.483-11.020
+  slot_backend_pct                    94.789   range 94.673-94.984
+  scaling_cur_freq_ghz                 3.648   range 3.648-3.648
+  scaling_cur_freq_samples            48.333   range 46.000-51.000
+  effective_ghz                        3.634   range 3.629-3.637
+  clock_of_max_pct                    82.657   range 82.542-82.717
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 4396800
+prime pinned: min=max=4396800 kHz (4396.8 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters stalls --repeat 3
+    1  saxpy.cpu.neon                    2692.7 us/iter x150    74.8 GB/s  fp=4.0985e+05  IPC=2.56
+    2  saxpy.cpu.neon                    2663.1 us/iter x150    75.6 GB/s  fp=4.0985e+05  IPC=2.58
+    3  saxpy.cpu.neon                    2669.5 us/iter x150    75.4 GB/s  fp=4.0985e+05  IPC=2.58
+
+  n=3  GB/s: mean 75.3  range 74.8-75.6  CoV 0.6%
+
+  counters, mean of 3 run(s):
+  cpu-cycles                  1,963,311,100
+  instructions                5,053,467,134
+  stalled-cycles-frontend        51,892,096
+  stalled-cycles-backend      1,196,167,047
+  raw-stall-slot             11,233,152,108
+  raw-stall-slot-backend     10,756,187,798
+  raw-stall-slot-frontend       494,243,538
+  raw-stall-backend-mem         245,050,143
+
+  ipc                                  2.574   range 2.560-2.582
+  cpi                                  0.389   range 0.387-0.391
+  frontend_stall_pct                   2.643   range 2.629-2.653
+  backend_stall_pct                   60.925   range 60.800-61.117
+  mem_stall_pct                       12.480   range 11.888-12.970
+  slot_backend_pct                    95.754   range 95.735-95.770
+  scaling_cur_freq_ghz                 4.397   range 4.397-4.397
+  scaling_cur_freq_samples            48.667   range 48.000-49.000
+  effective_ghz                        4.349   range 4.322-4.381
+  clock_of_max_pct                    98.904   range 98.294-99.634
