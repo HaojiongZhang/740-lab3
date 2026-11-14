@@ -1,0 +1,4 @@
+label,impl,p,rep,total_us,copy_us,compute_us,checksum
+dma_no_clean,staged,1,1,2421.0,716,1684,2085652
+dma_no_clean,staged,1,2,2414.0,711,1685,2086056
+dma_no_clean,staged,1,3,2430.0,727,1685,2086036

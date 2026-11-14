@@ -1,0 +1,164 @@
+{
+  "saxpy_reference_checks": [
+    {
+      "size": 32768,
+      "label": "search",
+      "sum_abs_error": 1.630859376433591e-07,
+      "frob_abs_error": 3.431305231060833e-07
+    },
+    {
+      "size": 65536,
+      "label": "search",
+      "sum_abs_error": 1.5368652839242714e-07,
+      "frob_abs_error": 3.4894907230409444e-07
+    },
+    {
+      "size": 32769,
+      "label": "search",
+      "sum_abs_error": 1.7504882787733322e-07,
+      "frob_abs_error": 2.1949225015305274e-07
+    },
+    {
+      "size": 49152,
+      "label": "search",
+      "sum_abs_error": 3.056640593968041e-07,
+      "frob_abs_error": 3.336777467666252e-07
+    },
+    {
+      "size": 57344,
+      "label": "search",
+      "sum_abs_error": 1.0864258115361736e-07,
+      "frob_abs_error": 2.4103746909531765e-07
+    },
+    {
+      "size": 61440,
+      "label": "search",
+      "sum_abs_error": 1.5161131727836619e-07,
+      "frob_abs_error": 1.3690333844351699e-07
+    },
+    {
+      "size": 63488,
+      "label": "search",
+      "sum_abs_error": 2.958984168799361e-07,
+      "frob_abs_error": 4.028366902275593e-07
+    },
+    {
+      "size": 62464,
+      "label": "search",
+      "sum_abs_error": 2.2082519990362925e-07,
+      "frob_abs_error": 1.8043829186353832e-07
+    },
+    {
+      "size": 61952,
+      "label": "search",
+      "sum_abs_error": 2.663574321104534e-07,
+      "frob_abs_error": 7.053546369206742e-08
+    },
+    {
+      "size": 61441,
+      "label": "search",
+      "sum_abs_error": 1.4562988326360937e-07,
+      "frob_abs_error": 1.97280485281226e-07
+    },
+    {
+      "size": 61696,
+      "label": "search",
+      "sum_abs_error": 2.5634761868786882e-08,
+      "frob_abs_error": 4.926518499814847e-07
+    },
+    {
+      "size": 61568,
+      "label": "search",
+      "sum_abs_error": 3.436279314428248e-07,
+      "frob_abs_error": 8.604513368482003e-08
+    },
+    {
+      "size": 61504,
+      "label": "search",
+      "sum_abs_error": 3.8940430613365606e-07,
+      "frob_abs_error": 2.656377660059661e-07
+    },
+    {
+      "size": 61536,
+      "label": "search",
+      "sum_abs_error": 4.484863325160404e-07,
+      "frob_abs_error": 3.468629188319028e-07
+    },
+    {
+      "size": 61520,
+      "label": "search",
+      "sum_abs_error": 4.991455000435963e-07,
+      "frob_abs_error": 3.672153070510831e-08
+    },
+    {
+      "size": 61512,
+      "label": "search",
+      "sum_abs_error": 4.7290038196479145e-07,
+      "frob_abs_error": 7.664351642233669e-08
+    },
+    {
+      "size": 61508,
+      "label": "search",
+      "sum_abs_error": 3.696289070376224e-07,
+      "frob_abs_error": 3.8912133959456696e-07
+    },
+    {
+      "size": 61506,
+      "label": "search",
+      "sum_abs_error": 4.291992183880211e-07,
+      "frob_abs_error": 1.3017825040151365e-07
+    },
+    {
+      "size": 61505,
+      "label": "search",
+      "sum_abs_error": 2.751464762695832e-07,
+      "frob_abs_error": 4.2968292746081715e-07
+    },
+    {
+      "size": 61504,
+      "label": "boundary_low",
+      "sum_abs_error": 3.8940430613365606e-07,
+      "frob_abs_error": 2.656377660059661e-07
+    },
+    {
+      "size": 61505,
+      "label": "boundary_high",
+      "sum_abs_error": 2.751464762695832e-07,
+      "frob_abs_error": 4.2968292746081715e-07
+    },
+    {
+      "size": 61504,
+      "label": "boundary_low",
+      "sum_abs_error": 3.8940430613365606e-07,
+      "frob_abs_error": 2.656377660059661e-07
+    },
+    {
+      "size": 61505,
+      "label": "boundary_high",
+      "sum_abs_error": 2.751464762695832e-07,
+      "frob_abs_error": 4.2968292746081715e-07
+    },
+    {
+      "size": 61504,
+      "label": "boundary_low",
+      "sum_abs_error": 3.8940430613365606e-07,
+      "frob_abs_error": 2.656377660059661e-07
+    },
+    {
+      "size": 61505,
+      "label": "boundary_high",
+      "sum_abs_error": 2.751464762695832e-07,
+      "frob_abs_error": 4.2968292746081715e-07
+    }
+  ],
+  "main_processes": 27,
+  "startup_processes": 24,
+  "startup_peak_c": 48.4,
+  "gpu_npu_relative_fingerprint_difference": 7.673608660718756e-07,
+  "limitations": [
+    "CPU matmul uses different inputs from GPU/NPU; INT8 uses its own quantized inputs.",
+    "SAXPY CPU 50000 iterations updates y in place; NPU reuses fixed inputs.",
+    "Repeated GPU inner-loop fingerprints have expected accumulation rounding; tolerance 0.03%.",
+    "INT8 is validated for harness success and stable fingerprints, not equivalence to FP16 inputs."
+  ]
+}

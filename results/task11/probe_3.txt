@@ -1,0 +1,30 @@
+=== 1. What the device claims ===
+  HAP_query_total_VTCM: page_size=8388608 page_count=1  -> total 8192 KB
+
+=== 2. Single acquire: how much can one process actually get? ===
+     1.000 MB ( 1048576 bytes) : OK   (acquire 59 us)
+     2.000 MB ( 2097152 bytes) : OK   (acquire 23 us)
+     4.000 MB ( 4194304 bytes) : OK   (acquire 25 us)
+     6.000 MB ( 6291456 bytes) : OK   (acquire 24 us)
+     7.000 MB ( 7340032 bytes) : OK   (acquire 22 us)
+     8.000 MB ( 8388608 bytes) : OK   (acquire 23 us)
+     8.000 MB ( 8388609 bytes) : FAIL (acquire 86 us)
+     8.004 MB ( 8392704 bytes) : FAIL (acquire 72 us)
+    12.000 MB (12582912 bytes) : FAIL (acquire 67 us)
+    16.000 MB (16777216 bytes) : FAIL (acquire 67 us)
+
+=== 3. Two simultaneous acquires of the same size ===
+  2 x   1.0 MB (=   2.0 MB) : first=OK second=OK
+  2 x   2.0 MB (=   4.0 MB) : first=OK second=OK
+  2 x   4.0 MB (=   8.0 MB) : first=OK second=OK
+  2 x   5.0 MB (=  10.0 MB) : first=OK second=FAIL
+
+=== 4. Bandwidth: VTCM vs ordinary memory (HVX vector accesses) ===
+        size    VTCM write    VTCM read      DDR write     DDR read
+       64 KB       79.2 GB/s      79.3 GB/s        78.9 GB/s      79.9 GB/s
+      256 KB       79.7 GB/s      79.7 GB/s        51.6 GB/s      79.8 GB/s
+     1024 KB       79.8 GB/s      79.8 GB/s        68.9 GB/s      58.9 GB/s
+     2048 KB       79.8 GB/s      79.8 GB/s        58.8 GB/s      12.4 GB/s
+     4096 KB       79.8 GB/s      79.8 GB/s        54.9 GB/s      10.8 GB/s
+     8192 KB       79.8 GB/s      79.8 GB/s        44.3 GB/s       9.8 GB/s
+
