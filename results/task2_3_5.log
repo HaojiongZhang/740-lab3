@@ -1,0 +1,121 @@
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 768000
+saved deployment defaults -> .power_pin_state.json
+prime pinned: min=max=768000 kHz (768.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py matmul cpu --core prime --variant eigen -p size=1024 --repeat 3
+    1  matmul.cpu.eigen               1160953.0 us      18.5 GFLOP/s  fp=2.7187e+04
+    2  matmul.cpu.eigen               1159127.0 us      18.5 GFLOP/s  fp=2.7187e+04
+    3  matmul.cpu.eigen               1158731.0 us      18.5 GFLOP/s  fp=2.7187e+04
+
+  n=3  GFLOP/s: mean 18.5  range 18.5-18.5  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py convolution cpu --core prime --variant neon -p cin=32 -p cout=32 -p H=56 -p W=56 --repeat 3
+    1  convolution.cpu.neon             18211.7 us/iter x10       3.2 GFLOP/s     0.0 GB/s  fp=4.8756e+03
+    2  convolution.cpu.neon             18085.9 us/iter x10       3.2 GFLOP/s     0.0 GB/s  fp=4.8756e+03
+    3  convolution.cpu.neon             18102.3 us/iter x10       3.2 GFLOP/s     0.0 GB/s  fp=4.8756e+03
+
+  n=3  GFLOP/s: mean 3.2  range 3.2-3.2  CoV 0.4%
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --repeat 3
+    1  saxpy.cpu.neon                    6396.0 us/iter x150    31.5 GB/s  fp=4.0985e+05
+    2  saxpy.cpu.neon                    6402.5 us/iter x150    31.4 GB/s  fp=4.0985e+05
+    3  saxpy.cpu.neon                    6531.6 us/iter x150    30.8 GB/s  fp=4.0985e+05
+
+  n=3  GB/s: mean 31.2  range 30.8-31.5  CoV 1.2%
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 1497600
+prime pinned: min=max=1497600 kHz (1497.6 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py matmul cpu --core prime --variant eigen -p size=1024 --repeat 3
+    1  matmul.cpu.eigen                592456.0 us      36.2 GFLOP/s  fp=2.7187e+04
+    2  matmul.cpu.eigen                591274.0 us      36.3 GFLOP/s  fp=2.7187e+04
+    3  matmul.cpu.eigen                591932.0 us      36.3 GFLOP/s  fp=2.7187e+04
+
+  n=3  GFLOP/s: mean 36.3  range 36.2-36.3  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py convolution cpu --core prime --variant neon -p cin=32 -p cout=32 -p H=56 -p W=56 --repeat 3
+    1  convolution.cpu.neon              9233.4 us/iter x10       6.3 GFLOP/s     0.1 GB/s  fp=4.8756e+03
+    2  convolution.cpu.neon              9262.2 us/iter x10       6.2 GFLOP/s     0.1 GB/s  fp=4.8756e+03
+    3  convolution.cpu.neon              9257.2 us/iter x10       6.2 GFLOP/s     0.1 GB/s  fp=4.8756e+03
+
+  n=3  GFLOP/s: mean 6.2  range 6.2-6.3  CoV 0.2%
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --repeat 3
+    1  saxpy.cpu.neon                    4552.9 us/iter x150    44.2 GB/s  fp=4.0985e+05
+    2  saxpy.cpu.neon                    4475.1 us/iter x150    45.0 GB/s  fp=4.0985e+05
+    3  saxpy.cpu.neon                    4471.1 us/iter x150    45.0 GB/s  fp=4.0985e+05
+
+  n=3  GB/s: mean 44.7  range 44.2-45.0  CoV 1.0%
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 2227200
+prime pinned: min=max=2227200 kHz (2227.2 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py matmul cpu --core prime --variant eigen -p size=1024 --repeat 3
+    1  matmul.cpu.eigen                397728.0 us      54.0 GFLOP/s  fp=2.7187e+04
+    2  matmul.cpu.eigen                397252.0 us      54.1 GFLOP/s  fp=2.7187e+04
+    3  matmul.cpu.eigen                397176.0 us      54.1 GFLOP/s  fp=2.7187e+04
+
+  n=3  GFLOP/s: mean 54.0  range 54.0-54.1  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py convolution cpu --core prime --variant neon -p cin=32 -p cout=32 -p H=56 -p W=56 --repeat 3
+    1  convolution.cpu.neon              6220.6 us/iter x10       9.3 GFLOP/s     0.1 GB/s  fp=4.8756e+03
+    2  convolution.cpu.neon              6208.7 us/iter x10       9.3 GFLOP/s     0.1 GB/s  fp=4.8756e+03
+    3  convolution.cpu.neon              6213.5 us/iter x10       9.3 GFLOP/s     0.1 GB/s  fp=4.8756e+03
+
+  n=3  GFLOP/s: mean 9.3  range 9.3-9.3  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --repeat 3
+    1  saxpy.cpu.neon                    3765.3 us/iter x150    53.5 GB/s  fp=4.0985e+05
+    2  saxpy.cpu.neon                    3633.8 us/iter x150    55.4 GB/s  fp=4.0985e+05
+    3  saxpy.cpu.neon                    3609.0 us/iter x150    55.8 GB/s  fp=4.0985e+05
+
+  n=3  GB/s: mean 54.9  range 53.5-55.8  CoV 2.3%
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 2880000
+prime pinned: min=max=2880000 kHz (2880.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py matmul cpu --core prime --variant eigen -p size=1024 --repeat 3
+    1  matmul.cpu.eigen                307613.0 us      69.8 GFLOP/s  fp=2.7187e+04
+    2  matmul.cpu.eigen                307183.0 us      69.9 GFLOP/s  fp=2.7187e+04
+    3  matmul.cpu.eigen                307075.0 us      69.9 GFLOP/s  fp=2.7187e+04
+
+  n=3  GFLOP/s: mean 69.9  range 69.8-69.9  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py convolution cpu --core prime --variant neon -p cin=32 -p cout=32 -p H=56 -p W=56 --repeat 3
+    1  convolution.cpu.neon              4803.1 us/iter x10      12.0 GFLOP/s     0.2 GB/s  fp=4.8756e+03
+    2  convolution.cpu.neon              4802.8 us/iter x10      12.0 GFLOP/s     0.2 GB/s  fp=4.8756e+03
+    3  convolution.cpu.neon              4804.9 us/iter x10      12.0 GFLOP/s     0.2 GB/s  fp=4.8756e+03
+
+  n=3  GFLOP/s: mean 12.0  range 12.0-12.0  CoV 0.0%
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --repeat 3
+    1  saxpy.cpu.neon                    3341.9 us/iter x150    60.2 GB/s  fp=4.0985e+05
+    2  saxpy.cpu.neon                    3404.4 us/iter x150    59.1 GB/s  fp=4.0985e+05
+    3  saxpy.cpu.neon                    3410.0 us/iter x150    59.0 GB/s  fp=4.0985e+05
+
+  n=3  GB/s: mean 59.5  range 59.0-60.2  CoV 1.1%
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 3648000
+prime pinned: min=max=3648000 kHz (3648.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py matmul cpu --core prime --variant eigen -p size=1024 --repeat 3
+    1  matmul.cpu.eigen                243012.0 us      88.4 GFLOP/s  fp=2.7187e+04
+    2  matmul.cpu.eigen                242656.0 us      88.5 GFLOP/s  fp=2.7187e+04
+    3  matmul.cpu.eigen                242441.0 us      88.6 GFLOP/s  fp=2.7187e+04
+
+  n=3  GFLOP/s: mean 88.5  range 88.4-88.6  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py convolution cpu --core prime --variant neon -p cin=32 -p cout=32 -p H=56 -p W=56 --repeat 3
+    1  convolution.cpu.neon              3784.2 us/iter x10      15.3 GFLOP/s     0.2 GB/s  fp=4.8756e+03
+    2  convolution.cpu.neon              3788.4 us/iter x10      15.3 GFLOP/s     0.2 GB/s  fp=4.8756e+03
+    3  convolution.cpu.neon              3786.4 us/iter x10      15.3 GFLOP/s     0.2 GB/s  fp=4.8756e+03
+
+  n=3  GFLOP/s: mean 15.3  range 15.3-15.3  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --repeat 3
+    1  saxpy.cpu.neon                    2617.9 us/iter x150    76.9 GB/s  fp=4.0985e+05
+    2  saxpy.cpu.neon                    2658.9 us/iter x150    75.7 GB/s  fp=4.0985e+05
+    3  saxpy.cpu.neon                    2875.3 us/iter x150    70.0 GB/s  fp=4.0985e+05
+
+  n=3  GB/s: mean 74.2  range 70.0-76.9  CoV 5.0%
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 4396800
+prime pinned: min=max=4396800 kHz (4396.8 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py matmul cpu --core prime --variant eigen -p size=1024 --repeat 3
+    1  matmul.cpu.eigen                201852.0 us     106.4 GFLOP/s  fp=2.7187e+04
+    2  matmul.cpu.eigen                201570.0 us     106.5 GFLOP/s  fp=2.7187e+04
+    3  matmul.cpu.eigen                201521.0 us     106.6 GFLOP/s  fp=2.7187e+04
+
+  n=3  GFLOP/s: mean 106.5  range 106.4-106.6  CoV 0.1%
+$ /opt/venv/bin/python /workspace/profiler.py convolution cpu --core prime --variant neon -p cin=32 -p cout=32 -p H=56 -p W=56 --repeat 3
+    1  convolution.cpu.neon              3143.0 us/iter x10      18.4 GFLOP/s     0.3 GB/s  fp=4.8756e+03
+    2  convolution.cpu.neon              3165.6 us/iter x10      18.3 GFLOP/s     0.3 GB/s  fp=4.8756e+03
+    3  convolution.cpu.neon              3145.6 us/iter x10      18.4 GFLOP/s     0.3 GB/s  fp=4.8756e+03
+
+  n=3  GFLOP/s: mean 18.3  range 18.3-18.4  CoV 0.4%
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --repeat 3
+    1  saxpy.cpu.neon                    2645.9 us/iter x150    76.1 GB/s  fp=4.0985e+05
+    2  saxpy.cpu.neon                    2648.3 us/iter x150    76.0 GB/s  fp=4.0985e+05
+    3  saxpy.cpu.neon                    2625.5 us/iter x150    76.7 GB/s  fp=4.0985e+05
+
+  n=3  GB/s: mean 76.3  range 76.0-76.7  CoV 0.5%

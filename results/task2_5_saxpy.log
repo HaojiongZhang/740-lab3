@@ -1,0 +1,69 @@
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 4396800
+saved deployment defaults -> .power_pin_state.json
+prime pinned: min=max=4396800 kHz (4396.8 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters basic --repeat 3
+    1  saxpy.cpu.neon                    2660.6 us/iter x150    75.7 GB/s  fp=4.0985e+05  IPC=2.59
+    2  saxpy.cpu.neon                    2702.8 us/iter x150    74.5 GB/s  fp=4.0985e+05  IPC=2.55
+    3  saxpy.cpu.neon                    2708.6 us/iter x150    74.3 GB/s  fp=4.0985e+05  IPC=2.54
+
+  n=3  GB/s: mean 74.8  range 74.3-75.7  CoV 1.0%
+
+  counters, mean of 3 run(s):
+  cpu-cycles       1,973,083,176
+  instructions     5,053,509,479
+
+  ipc                                  2.561   range 2.545-2.588
+  cpi                                  0.390   range 0.386-0.393
+  scaling_cur_freq_ghz                 4.397   range 4.397-4.397
+  scaling_cur_freq_samples            48.333   range 48.000-49.000
+  effective_ghz                        4.326   range 4.316-4.340
+  clock_of_max_pct                    98.394   range 98.167-98.698
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16384 -p iterations=1000 --counters basic --repeat 3
+    1  saxpy.cpu.neon                       1.2 us/iter x1000   164.0 GB/s  fp=1.2546e+05  IPC=2.34  [clock 72% of max]
+    2  saxpy.cpu.neon                       1.2 us/iter x1000   166.1 GB/s  fp=1.2546e+05  IPC=2.20  [clock 53% of max]
+    3  saxpy.cpu.neon                       1.2 us/iter x1000   166.3 GB/s  fp=1.2546e+05  IPC=2.04  [clock 71% of max]
+
+  n=3  GB/s: mean 165.5  range 164.0-166.3  CoV 0.8%
+
+  counters, mean of 3 run(s):
+  cpu-cycles          28,958,285
+  instructions        63,365,331
+
+  ipc                          2.195   range 2.044-2.339
+  cpi                          0.457   range 0.428-0.489
+  effective_ghz                2.880   range 2.351-3.174
+  clock_of_max_pct            65.502   range 53.468-72.195
+$ /opt/venv/bin/python /workspace/scripts/power_pin.py prime 2880000
+prime pinned: min=max=2880000 kHz (2880.0 MHz)  [read-back OK]
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16777216 -p iterations=150 --counters basic --repeat 3
+    1  saxpy.cpu.neon                    3383.4 us/iter x150    59.5 GB/s  fp=4.0985e+05  IPC=3.06  [clock 65% of max]
+    2  saxpy.cpu.neon                    3391.6 us/iter x150    59.4 GB/s  fp=4.0985e+05  IPC=3.05  [clock 65% of max]
+    3  saxpy.cpu.neon                    3413.8 us/iter x150    59.0 GB/s  fp=4.0985e+05  IPC=3.04  [clock 65% of max]
+
+  n=3  GB/s: mean 59.3  range 59.0-59.5  CoV 0.5%
+
+  counters, mean of 3 run(s):
+  cpu-cycles       1,657,609,033
+  instructions     5,054,060,226
+
+  ipc                                  3.049   range 3.036-3.065
+  cpi                                  0.328   range 0.326-0.329
+  scaling_cur_freq_ghz                 2.880   range 2.880-2.880
+  scaling_cur_freq_samples            55.333   range 53.000-58.000
+  effective_ghz                        2.870   range 2.863-2.878
+  clock_of_max_pct                    65.279   range 65.105-65.453
+$ /opt/venv/bin/python /workspace/profiler.py saxpy cpu --core prime --variant neon -p size=16384 -p iterations=1000 --counters basic --repeat 3
+    1  saxpy.cpu.neon                       1.8 us/iter x1000   107.1 GB/s  fp=1.2546e+05  IPC=2.73  [clock 68% of max]
+    2  saxpy.cpu.neon                       1.8 us/iter x1000   107.1 GB/s  fp=1.2546e+05  IPC=2.40  [clock 53% of max]
+    3  saxpy.cpu.neon                       1.8 us/iter x1000   108.1 GB/s  fp=1.2546e+05  IPC=2.46  [clock 41% of max]
+
+  n=3  GB/s: mean 107.5  range 107.1-108.1  CoV 0.5%
+
+  counters, mean of 3 run(s):
+  cpu-cycles          25,154,251
+  instructions        63,511,550
+
+  ipc                          2.533   range 2.403-2.734
+  cpi                          0.396   range 0.366-0.416
+  effective_ghz                2.377   range 1.809-3.007
+  clock_of_max_pct            54.072   range 41.136-68.399
