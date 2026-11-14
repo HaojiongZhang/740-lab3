@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import random
 import statistics
 import sys
 import time
@@ -311,7 +312,8 @@ def precheck_temperature(thermal: ThermalReader, max_temp: float) -> None:
 
 def run_cases(*, profiler: Profiler, args: argparse.Namespace, cases: Sequence[Case],
               phase: str, counters: str | None = None,
-              common_clock_khz: int | None = None) -> tuple[list[dict[str, Any]], TrialLog]:
+              common_clock_khz: int | None = None,
+              shuffle_seed: int | None = None) -> tuple[list[dict[str, Any]], TrialLog]:
     """Run serial cases in a rotating order and persist every result immediately."""
     if args.reps < 1:
         raise SystemExit("--reps must be at least 1")
@@ -325,8 +327,14 @@ def run_cases(*, profiler: Profiler, args: argparse.Namespace, cases: Sequence[C
     rows: list[dict[str, Any]] = []
     try:
         for trial in range(1, args.reps + 1):
-            offset = (trial - 1) % len(cases)
-            ordered = [*cases[offset:], *cases[:offset]]
+            if shuffle_seed is None:
+                offset = (trial - 1) % len(cases)
+                ordered = [*cases[offset:], *cases[:offset]]
+            else:
+                # A stable seed makes the schedule reproducible while avoiding
+                # a systematic association between sweep value and temperature.
+                ordered = list(cases)
+                random.Random(shuffle_seed + trial).shuffle(ordered)
             for position, case in enumerate(ordered, start=1):
                 precheck_temperature(thermal, args.max_temp)
                 result = profiler.run(make_task(case, counters=counters))

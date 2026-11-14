@@ -48,6 +48,8 @@ def main() -> None:
     ap.add_argument("--weights", type=parse_weights,
                     default=parse_weights("0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4"),
                     help="comma-separated Prime work weights to sweep")
+    ap.add_argument("--shuffle-seed", type=int, default=None,
+                    help="shuffle case order independently per repetition using this seed")
     ap.add_argument("--allow-dvfs", action="store_true",
                     help="permit unlocked exploratory runs; not suitable for report comparisons")
     args = ap.parse_args()
@@ -70,7 +72,8 @@ def main() -> None:
         for weight in args.weights
     )
     rows, log = run_cases(profiler=profiler, args=args, cases=cases,
-                          phase="task8_4_5", counters=None)
+                          phase="task8_4_5", counters=None,
+                          shuffle_seed=args.shuffle_seed)
     try:
         summary_path, summary = write_summary(log, rows, ("case", "prime_weight"))
         even = next((row for row in summary if abs(float(row["prime_weight"]) - 1.0) < 1e-9), None)
